@@ -1,10 +1,8 @@
 ﻿using Lockstep.Game;
-using Lockstep.Math;
-using Lockstep.Game;
 using UnityEngine;
 
-
-public class MainScript : MonoBehaviour {
+public class MainScript : MonoBehaviour
+{
     public Launcher launcher = new Launcher();
     public int MaxEnemyCount = 10;
     public bool IsClientMode = false;
@@ -15,7 +13,8 @@ public class MainScript : MonoBehaviour {
 
     private ServiceContainer _serviceContainer;
 
-    private void Awake(){
+    private void Awake()
+    {
         gameObject.AddComponent<PingMono>();
         gameObject.AddComponent<InputMono>();
         _serviceContainer = new UnityServiceContainer();
@@ -30,7 +29,8 @@ public class MainScript : MonoBehaviour {
     }
 
 
-    private void Start(){
+    private void Start()
+    {
         var stateService = GetService<IConstStateService>();
         string path = Application.dataPath;
 #if UNITY_EDITOR
@@ -46,20 +46,24 @@ public class MainScript : MonoBehaviour {
         HasInit = true;
     }
 
-    private void Update(){
+    private void Update()
+    {
         _serviceContainer.GetService<IConstStateService>().IsRunVideo = IsVideoMode;
         launcher.DoUpdate(Time.deltaTime);
     }
 
-    private void OnDestroy(){
+    private void OnDestroy()
+    {
         launcher.DoDestroy();
     }
 
-    private void OnApplicationQuit(){
+    private void OnApplicationQuit()
+    {
         launcher.OnApplicationQuit();
     }
 
-    public T GetService<T>() where T : IService{
+    public T GetService<T>() where T : IService
+    {
         return _serviceContainer.GetService<T>();
     }
 }

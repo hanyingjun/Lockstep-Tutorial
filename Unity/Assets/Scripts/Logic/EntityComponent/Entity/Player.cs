@@ -1,25 +1,30 @@
-using System;
-using System.Collections.Generic;
-using Lockstep;
-using Lockstep.Game;
 using Lockstep.Math;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+using System;
 
-namespace Lockstep.Game {
+namespace Lockstep.Game
+{
     [Serializable]
-    public partial class Player : Entity {
+    public partial class Player : Entity
+    {
+        [Backup]
         public int localId;
         public PlayerInput input = new PlayerInput();
         public CMover mover = new CMover();
- 
-        protected override void BindRef(){
-            base.BindRef();
-            RegisterComponent(mover);
+        public CJumper jumper = new CJumper();
+
+        protected override void DoInitialize()
+        {
+            base.DoInitialize();
+            AddComponent<CMover>();
+            AddComponent<CJumper>();
         }
-        public override void DoUpdate(LFloat deltaTime){
+
+        public override void DoUpdate(LFloat deltaTime)
+        {
             base.DoUpdate(deltaTime);
-            if (input.skillId != 0) {
+            if (input.skillId != 0)
+            {
+                Logging.Debug.Log("Ö´ÐÐ¼¼ÄÜ " + input.skillId);
                 Fire(input.skillId);
             }
         }

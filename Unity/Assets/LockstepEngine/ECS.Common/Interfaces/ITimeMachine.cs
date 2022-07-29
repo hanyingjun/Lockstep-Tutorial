@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-namespace Lockstep.Game {
-    public interface ITimeMachine {
-        int CurTick { get;}
+﻿namespace Lockstep.Game
+{
+    public interface ITimeMachine
+    {
+        int CurTick { get; }
         ///Rollback to tick , so all cmd between [tick,~)(Include tick) should undo
         void RollbackTo(int tick);
         void Backup(int tick);

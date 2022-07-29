@@ -5,9 +5,9 @@ namespace Lockstep.PathFinding {
     public class GeometryUtil {
         public static LFloat FLOAT_ROUNDING_ERROR = new LFloat(true,1);
 
-        private static LVector3 TMP_VEC_1 = new LVector3();
-        private static LVector3 TMP_VEC_2 = new LVector3();
-        private static LVector3 TMP_VEC_3 = new LVector3();
+        //private static LVector3 TMP_VEC_1 = new LVector3();
+        //private static LVector3 TMP_VEC_2 = new LVector3();
+        //private static LVector3 TMP_VEC_3 = new LVector3();
 
         /** Projects a point to a line segment. This implementation is thread-safe.	 */
         public static LFloat nearestSegmentPointSquareDistance

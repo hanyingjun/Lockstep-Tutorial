@@ -1,21 +1,33 @@
+using Lockstep.Collision2D;
+using Lockstep.Math;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Lockstep;
-using Lockstep.Collision2D;
-using Lockstep.Game;
-using Lockstep.Math;
 using Debug = Lockstep.Logging.Debug;
 
-namespace Lockstep.Game {
+namespace Lockstep.Game
+{
     [Serializable]
     [NoBackup]
-    public partial class BaseEntity : BaseLifeCycle, IEntity, ILPTriggerEventHandler {
+    public partial class BaseEntity : BaseLifeCycle, IEntity, ILPTriggerEventHandler
+    {
+        [Backup]
         public int EntityId;
+        [Backup]
         public int PrefabId;
-        public CTransform2D transform = new CTransform2D();
-        [NoBackup] public object engineTransform;
-        protected List<BaseComponent> allComponents;
+
+        public CTransform2D transform
+        {
+            get { return this.GetComponent<CTransform2D>(); }
+        }
+        [NoBackup]
+        public object engineTransform;
+
+        [NonSerialized]
+        private Dictionary<Type, bool> allComponentKeys = null;
+        [NonSerialized]
+        private List<BaseComponent> allComponents = null;
+        [NonSerialized]
+        private Dictionary<Type, IComponent> _allComponents = null;
 
         [ReRefBackup] public IGameStateService GameStateService { get; set; }
         [ReRefBackup] public IServiceContainer ServiceContainer { get; set; }
@@ -23,67 +35,130 @@ namespace Lockstep.Game {
 
         [ReRefBackup] public IEntityView EntityView;
 
-     
-     
-        
-        public T GetService<T>() where T : IService{
-            return ServiceContainer.GetService<T>();
-        }
-        
-        public void DoBindRef(){
-            BindRef();
+        #region Impletetion BaseLiseCycle
+
+        public override void DoAwake()
+        {
+            for (int i = 0, length = allComponents.Count; i < length; i++)
+            {
+                allComponents[i].DoAwake();
+            }
         }
 
-        public virtual void OnRollbackDestroy(){
-            EntityView?.OnRollbackDestroy();
+        public override void DoStart()
+        {
+            for (int i = 0, length = allComponents.Count; i < length; i++)
+            {
+                allComponents[i].DoStart();
+            }
+        }
+
+        public override void DoUpdate(LFloat deltaTime)
+        {
+            for (int i = 0, length = allComponents.Count; i < length; i++)
+            {
+                allComponents[i].DoUpdate(deltaTime);
+            }
+        }
+
+        public override void DoDestroy()
+        {
+            for (int i = 0, length = allComponents.Count; i < length; i++)
+            {
+                allComponents[i].DoDestroy();
+            }
+        }
+
+        #endregion
+
+        public T GetService<T>() where T : IService
+        {
+            return ServiceContainer.GetService<T>();
+        }
+
+        public void AddComponent<T>() where T : IComponent
+        {
+            T com = Activator.CreateInstance<T>();
+            this.AddComponent(com);
+        }
+
+        public void AddComponent(IComponent comp)
+        {
+            Type type = comp.GetType();
+            if (comp is BaseComponent)
+            {
+                if (_allComponents.ContainsKey(type))
+                {
+                    Debug.LogError(type.Name + " component has add.");
+                }
+                else
+                {
+                    BaseComponent com = comp as BaseComponent;
+                    allComponents.Add(com);
+                }
+            }
+
+            if (_allComponents.ContainsKey(type))
+            {
+                Debug.LogError(type.Name + " component has add.");
+            }
+            else
+            {
+                _allComponents.Add(type, comp);
+            }
+        }
+
+        public void Initialize()
+        {
+            if (allComponentKeys != null)
+                allComponentKeys.Clear();
+            else
+                allComponentKeys = new Dictionary<Type, bool>();
+            if (allComponents != null)
+                allComponents.Clear();
+            else
+                allComponents = new List<BaseComponent>();
+
+            if (_allComponents != null)
+                _allComponents.Clear();
+            else
+                _allComponents = new Dictionary<Type, IComponent>();
+            this.DoInitialize();
+        }
+
+        protected virtual void DoInitialize()
+        {
+            this.AddComponent(new CTransform2D());
+        }
+
+        public void DoBindRef()
+        {
+            for (int i = 0, length = allComponents.Count; i < length; i++)
+            {
+                allComponents[i].BindEntity(this);
+            }
+        }
+
+        public T GetComponent<T>() where T : IComponent
+        {
+            Type t = typeof(T);
+            if (_allComponents == null || !_allComponents.ContainsKey(t))
+                return default(T);
+            return (T)_allComponents[t];
+        }
+
+        public virtual void OnRollbackDestroy()
+        {
+            if (EntityView != null)
+                EntityView.OnRollbackDestroy();
             EntityView = null;
             engineTransform = null;
         }
 
-        protected virtual void BindRef(){
-            allComponents?.Clear();
-        }
+        public virtual void OnLPTriggerEnter(ColliderProxy other) { }
 
-        protected void RegisterComponent(BaseComponent comp){
-            if (allComponents == null) {
-                allComponents = new List<BaseComponent>();
-            }
-            allComponents.Add(comp);
-            comp.BindEntity(this);
-        }
+        public virtual void OnLPTriggerStay(ColliderProxy other) { }
 
-        public override void DoAwake(){
-            if (allComponents == null) return;
-            foreach (var comp in allComponents) {
-                comp.DoAwake();
-            }
-        }
-
-        public override void DoStart(){
-            if (allComponents == null) return;
-            foreach (var comp in allComponents) {
-                comp.DoStart();
-            }
-        }
-
-        public override void DoUpdate(LFloat deltaTime){
-            if (allComponents == null) return;
-            foreach (var comp in allComponents) {
-                comp.DoUpdate(deltaTime);
-            }
-        }
-
-        public override void DoDestroy(){
-            if (allComponents == null) return;
-            foreach (var comp in allComponents) {
-                comp.DoDestroy();
-            }
-        }
-
-        public virtual void OnLPTriggerEnter(ColliderProxy other){ }
-
-        public virtual void OnLPTriggerStay(ColliderProxy other){ }
-
-        public virtual void OnLPTriggerExit(ColliderProxy other){ }
+        public virtual void OnLPTriggerExit(ColliderProxy other) { }
     }
 }

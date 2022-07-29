@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
 using Lockstep.Math;
 using Lockstep.UnsafeCollision2D;
 using Lockstep.Util;
-using Random = System.Random;
+using System.Collections.Generic;
 using Debug = Lockstep.Logging.Debug;
 
-namespace Lockstep.Collision2D {
+namespace Lockstep.Collision2D
+{
     public delegate void FuncGlobalOnTriggerEvent(ColliderProxy a, ColliderProxy b, ECollisionEvent type);
 
     public partial class CollisionSystem : ICollisionSystem {

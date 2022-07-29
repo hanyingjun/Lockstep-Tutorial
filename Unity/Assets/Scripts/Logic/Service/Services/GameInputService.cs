@@ -1,28 +1,30 @@
-using System.Collections.Generic;
-using Lockstep.Game;
-using Lockstep.Logging;
 using Lockstep.Math;
 using Lockstep.Serialization;
 using Lockstep.Util;
 using NetMsg.Common;
+using System.Collections.Generic;
 
-namespace Lockstep.Game {
-    public class GameInputService : IInputService {
+namespace Lockstep.Game
+{
+    public class GameInputService : IInputService
+    {
         public static PlayerInput CurGameInput = new PlayerInput();
 
-        public void Execute(InputCmd cmd, object entity){
-            var input = new Deserializer(cmd.content).Parse<PlayerInput>();
-            var playerInput = entity as PlayerInput;
+        public void Execute(InputCmd cmd, object entity)
+        {
+            PlayerInput input = new Deserializer(cmd.content).Parse<PlayerInput>();
+            PlayerInput playerInput = entity as PlayerInput;
             playerInput.mousePos = input.mousePos;
             playerInput.inputUV = input.inputUV;
             playerInput.isInputFire = input.isInputFire;
             playerInput.skillId = input.skillId;
             playerInput.isSpeedUp = input.isSpeedUp;
-            //Debug.Log("InputUV  " + input.inputUV);
         }
 
-        public List<InputCmd> GetInputCmds(){
-            if (CurGameInput.Equals(PlayerInput.Empty)) {
+        public List<InputCmd> GetInputCmds()
+        {
+            if (CurGameInput.Equals(PlayerInput.Empty))
+            {
                 return null;
             }
 
@@ -33,7 +35,8 @@ namespace Lockstep.Game {
             };
         }
 
-        public List<InputCmd> GetDebugInputCmds(){
+        public List<InputCmd> GetDebugInputCmds()
+        {
             return new List<InputCmd>() {
                 new InputCmd() {
                     content = new PlayerInput() {

@@ -1,23 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using Lockstep.Util;
+using System.Collections.Generic;
 using System.IO;
-using Lockstep.Util;
+using Debug = Lockstep.Logging.Debug;
 
-namespace Lockstep.Game {
-    public class ResService : BaseService, IResService {
+namespace Lockstep.Game
+{
+    public class ResService : BaseService, IResService
+    {
         private Dictionary<ushort, string> _id2Path = new Dictionary<ushort, string>();
-        public override void DoStart(){
+        public override void DoStart()
+        {
+            Debug.Log($"{nameof(ResService)} DoStart");
             base.DoStart();
             var path = _constStateService.ClientConfigPath + "AssetPath.json";
             var text = File.ReadAllText(path);
             //TODO 
             var content = JsonUtil.ToObject<Dictionary<string, string>>(text);
-            foreach (var pair in content) {
+            foreach (var pair in content)
+            {
                 _id2Path[ushort.Parse(pair.Key)] = pair.Value;
             }
         }
 
-        public string GetAssetPath(ushort assetId){
-            if (_id2Path.TryGetValue(assetId, out string path)) {
+        public string GetAssetPath(ushort assetId)
+        {
+            if (_id2Path.TryGetValue(assetId, out string path))
+            {
                 return path;
             }
             return null;

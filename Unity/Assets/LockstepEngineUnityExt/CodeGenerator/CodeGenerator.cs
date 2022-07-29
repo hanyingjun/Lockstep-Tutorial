@@ -195,6 +195,12 @@ namespace Lockstep.CodeGenerator {
                     continue;
                 }
 
+                if (HasAttribute(field, GenInfo.ForceGenAttriName))
+                {
+                    retfileds.Add(field);
+                    continue;
+                }
+
                 if (!(field.CanWrite && field.SetMethod.IsPublic) || !(field.CanRead && field.GetMethod.IsPublic))
                     continue;
                 retfileds.Add(field);

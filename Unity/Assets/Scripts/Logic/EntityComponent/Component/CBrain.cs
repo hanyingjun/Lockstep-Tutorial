@@ -26,7 +26,7 @@ namespace Lockstep.Game {
             var minDist = LFloat.MaxValue;
             Entity minTarget = null;
             foreach (var player in allPlayer) {
-                if (player.isDead) continue;
+                if (player.IsDead) continue;
                 var dist = (player.transform.pos - transform.pos).sqrMagnitude;
                 if (dist < minDist) {
                     minTarget = player;

@@ -1,20 +1,31 @@
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
 using Lockstep.Math;
-using Lockstep.Util;
-using Lockstep.Game;
 using Lockstep.Network;
+using Lockstep.Util;
 using NetMsg.Common;
-using UnityEngine;
+using System;
+using System.Threading;
 using Debug = UnityEngine.Debug;
 
-namespace Lockstep.Game {
+namespace Lockstep.Game
+{
+    /*
+     *          ServiceReferenceHolder     IService     ILifeCycle      ITimeMachine        IHashCode       IDumpStr
+     *                  |                    |                |               |                 |                 | 
+     *                  ---------------------^--------------------------------^-----------------------------------
+     *                                    |  |                                ^---------------------------------<
+     *                                    |  ^-----------------------<------------------------<----------------<|    
+     *                                    |                          |                        |                 |       
+     *                              BaseService             IEventRegisterService       IGameViewService   ITimeMachineService
+     *            ----------------------|                            |
+     *            |             |                                    |
+     *      BaseGameService  NetworkService                 EventRegisterService
+     *            |
+     *      SimulatorService
+     */
     [Serializable]
     public class Launcher : ILifeCycle {
 
-        public int CurTick => _serviceContainer.GetService<ICommonStateService>().Tick;
+        public int CurTick { get { return _serviceContainer.GetService<ICommonStateService>().Tick; } }
 
         public static Launcher Instance { get; private set; }
 
@@ -32,7 +43,6 @@ namespace Lockstep.Game {
 
         private SimulatorService _simulatorService = new SimulatorService();
         private NetworkService _networkService = new NetworkService();
-
 
         private IConstStateService _constStateService;
         public bool IsRunVideo => _constStateService.IsRunVideo;
@@ -97,7 +107,6 @@ namespace Lockstep.Game {
         public void _DoAwake(IServiceContainer serviceContainer){
             _simulatorService = serviceContainer.GetService<ISimulatorService>() as SimulatorService;
             _networkService = serviceContainer.GetService<INetworkService>() as NetworkService;
-            _constStateService = serviceContainer.GetService<IConstStateService>();
             _constStateService = serviceContainer.GetService<IConstStateService>();
 
             if (IsVideoMode) {

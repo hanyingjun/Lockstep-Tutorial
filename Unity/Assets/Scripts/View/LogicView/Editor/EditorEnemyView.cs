@@ -1,6 +1,5 @@
 using Lockstep.Game;
 using Lockstep.Math;
-using Lockstep.Game;
 using UnityEditor;
 using UnityEngine;
 

@@ -1,14 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using Lockstep.Game;
 using Lockstep.Logging;
 using Lockstep.Network;
-using Lockstep.Util;
 using NetMsg.Common;
+using System;
+using System.Collections.Generic;
+using System.Net;
 
-namespace Lockstep.FakeServer {
+namespace Lockstep.FakeServer
+{
     public class Server : IMessageDispatcher {
         //network
         public static IPEndPoint serverIpPoint = NetworkUtil.ToIPEndPoint("127.0.0.1", 10083);

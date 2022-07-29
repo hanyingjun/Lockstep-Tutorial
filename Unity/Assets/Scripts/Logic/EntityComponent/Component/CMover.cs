@@ -1,28 +1,30 @@
-using System;
 using Lockstep.Collision2D;
-using Lockstep.Game;
 using Lockstep.Math;
+using System;
 
-namespace Lockstep.Game {
-    
+namespace Lockstep.Game
+{
     [Serializable]
-    public partial class CMover : Component {
-        public Player player => (Player) entity;
-        public PlayerInput input => player.input;
+    public partial class CMover : Component
+    {
+        public Player player { get { return (Player)entity; } }
+        private PlayerInput input { get { return player.input; } }
 
-        
         static LFloat _sqrStopDist = new LFloat(true, 40);
-        public LFloat speed => player.moveSpd;
+        public LFloat speed { get { return player.moveSpd; } }
         public bool hasReachTarget = false;
         public bool needMove = true;
 
-        public override void DoUpdate(LFloat deltaTime){
-            if (!entity.rigidbody.isOnFloor) {
+        public override void DoUpdate(LFloat deltaTime)
+        {
+            if (!entity.rigidbody.isOnFloor)
+            {
                 return;
             }
 
             var needChase = input.inputUV.sqrMagnitude > new LFloat(true, 10);
-            if (needChase) {
+            if (needChase)
+            {
                 var dir = input.inputUV.normalized;
                 transform.pos = transform.pos + dir * speed * deltaTime;
                 var targetDeg = dir.ToDeg();

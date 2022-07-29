@@ -1,8 +1,7 @@
-using System;
-using System.IO;
 using Lockstep.Logging;
 
-namespace Lockstep.Util {
+namespace Lockstep.Util
+{
     public class Utils {
         public static void StartServices(){
             LTime.DoStart();
