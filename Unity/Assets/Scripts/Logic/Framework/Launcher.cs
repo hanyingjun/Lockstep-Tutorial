@@ -23,8 +23,8 @@ namespace Lockstep.Game
      *      SimulatorService
      */
     [Serializable]
-    public class Launcher : ILifeCycle {
-
+    public class Launcher : ILifeCycle
+    {
         public int CurTick { get { return _serviceContainer.GetService<ICommonStateService>().Tick; } }
 
         public static Launcher Instance { get; private set; }
@@ -32,7 +32,6 @@ namespace Lockstep.Game
         private ServiceContainer _serviceContainer;
         private ManagerContainer _mgrContainer;
         private TimeMachineContainer _timeMachineContainer;
-        private IEventRegisterService _registerService;
 
         public string RecordPath;
         public int MaxRunTick = int.MaxValue;
@@ -41,21 +40,24 @@ namespace Lockstep.Game
 
         public int JumpToTick = 10;
 
-        private SimulatorService _simulatorService = new SimulatorService();
-        private NetworkService _networkService = new NetworkService();
+        private IEventRegisterService _registerService;
+        private SimulatorService _simulatorService = null;
+        private NetworkService _networkService = null;
+        private IConstStateService _constStateService = null;
 
-        private IConstStateService _constStateService;
-        public bool IsRunVideo => _constStateService.IsRunVideo;
-        public bool IsVideoMode => _constStateService.IsVideoMode;
-        public bool IsClientMode => _constStateService.IsClientMode;
+        public bool IsRunVideo { get { return _constStateService.IsRunVideo; } }
+        public bool IsVideoMode { get { return _constStateService.IsVideoMode; } }
+        public bool IsClientMode { get { return _constStateService.IsClientMode; } }
 
-        public object transform;
-        private OneThreadSynchronizationContext _syncContext; 
-        public void DoAwake(IServiceContainer services){
+        private OneThreadSynchronizationContext _syncContext;
+
+        public void DoAwake(IServiceContainer services)
+        {
             _syncContext = new OneThreadSynchronizationContext();
             SynchronizationContext.SetSynchronizationContext(_syncContext);
             Utils.StartServices();
-            if (Instance != null) {
+            if (Instance != null)
+            {
                 Debug.LogError("LifeCycle Error: Awake more than once!!");
                 return;
             }
@@ -68,9 +70,11 @@ namespace Lockstep.Game
 
             //AutoCreateManagers;
             var svcs = _serviceContainer.GetAllServices();
-            foreach (var service in svcs) {
+            foreach (var service in svcs)
+            {
                 _timeMachineContainer.RegisterTimeMachine(service as ITimeMachine);
-                if (service is BaseService baseService) {
+                if (service is BaseService baseService)
+                {
                     _mgrContainer.RegisterManager(baseService);
                 }
             }
@@ -79,43 +83,50 @@ namespace Lockstep.Game
             _serviceContainer.RegisterService(_registerService);
         }
 
-
-        public void DoStart(){
-            foreach (var mgr in _mgrContainer.AllMgrs) {
+        public void DoStart()
+        {
+            foreach (var mgr in _mgrContainer.AllMgrs)
+            {
                 mgr.InitReference(_serviceContainer, _mgrContainer);
             }
 
             //bind events
-            foreach (var mgr in _mgrContainer.AllMgrs) {
+            foreach (var mgr in _mgrContainer.AllMgrs)
+            {
                 _registerService.RegisterEvent<EEvent, GlobalEventHandler>("OnEvent_", "OnEvent_".Length,
                     EventHelper.AddListener, mgr);
             }
 
-            foreach (var mgr in _mgrContainer.AllMgrs) {
+            foreach (var mgr in _mgrContainer.AllMgrs)
+            {
                 mgr.DoAwake(_serviceContainer);
             }
 
             _DoAwake(_serviceContainer);
 
-            foreach (var mgr in _mgrContainer.AllMgrs) {
+            foreach (var mgr in _mgrContainer.AllMgrs)
+            {
                 mgr.DoStart();
             }
 
             _DoStart();
         }
 
-        public void _DoAwake(IServiceContainer serviceContainer){
+        public void _DoAwake(IServiceContainer serviceContainer)
+        {
             _simulatorService = serviceContainer.GetService<ISimulatorService>() as SimulatorService;
             _networkService = serviceContainer.GetService<INetworkService>() as NetworkService;
             _constStateService = serviceContainer.GetService<IConstStateService>();
 
-            if (IsVideoMode) {
+            if (IsVideoMode)
+            {
                 _constStateService.SnapshotFrameInterval = 20;
                 //OpenRecordFile(RecordPath);
             }
         }
 
-        public void _DoStart(){
+        public void _DoStart()
+        {
             //_debugService.Trace("Before StartGame _IdCounter" + BaseEntity.IdCounter);
             //if (!IsReplay && !IsClientMode) {
             //    netClient = new NetClient();
@@ -126,45 +137,52 @@ namespace Lockstep.Game
             //    StartGame(0, playerServerInfos, localPlayerId);
             //}
 
-
-            if (IsVideoMode) {
+            if (IsVideoMode)
+            {
                 EventHelper.Trigger(EEvent.BorderVideoFrame, FramesInfo);
                 EventHelper.Trigger(EEvent.OnGameCreate, GameStartInfo);
             }
-            else if (IsClientMode) {
+            else if (IsClientMode)
+            {
                 GameStartInfo = _serviceContainer.GetService<IGameConfigService>().ClientModeInfo;
                 EventHelper.Trigger(EEvent.OnGameCreate, GameStartInfo);
                 EventHelper.Trigger(EEvent.LevelLoadDone, GameStartInfo);
             }
         }
 
-        public void DoUpdate(float fDeltaTime){
+        public void DoUpdate(float fDeltaTime)
+        {
             _syncContext.Update();
             Utils.UpdateServices();
             var deltaTime = fDeltaTime.ToLFloat();
             _networkService.DoUpdate(deltaTime);
-            if (IsVideoMode && IsRunVideo && CurTick < MaxRunTick) {
+            if (IsVideoMode && IsRunVideo && CurTick < MaxRunTick)
+            {
                 _simulatorService.RunVideo();
                 return;
             }
 
-            if (IsVideoMode && !IsRunVideo) {
+            if (IsVideoMode && !IsRunVideo)
+            {
                 _simulatorService.JumpTo(JumpToTick);
             }
 
             _simulatorService.DoUpdate(fDeltaTime);
         }
 
-        public void DoDestroy(){
+        public void DoDestroy()
+        {
             if (Instance == null) return;
-            foreach (var mgr in _mgrContainer.AllMgrs) {
+            foreach (var mgr in _mgrContainer.AllMgrs)
+            {
                 mgr.DoDestroy();
             }
 
             Instance = null;
         }
 
-        public void OnApplicationQuit(){
+        public void OnApplicationQuit()
+        {
             DoDestroy();
         }
     }

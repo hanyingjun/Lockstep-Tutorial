@@ -14,7 +14,7 @@ namespace Lockstep.Game
         public int EntityId;
         [Backup]
         public int PrefabId;
-
+        [Backup]
         public CTransform2D transform
         {
             get { return this.GetComponent<CTransform2D>(); }
@@ -130,6 +130,16 @@ namespace Lockstep.Game
         {
             this.AddComponent(new CTransform2D());
         }
+
+        /// <summary>
+        /// 填充组件配置信息，对于backup的不需要执行
+        /// </summary>
+        public void FillComponentsConfig()
+        {
+            DoFillComponentsConfig();
+        }
+
+        protected virtual void DoFillComponentsConfig() { }
 
         public void DoBindRef()
         {

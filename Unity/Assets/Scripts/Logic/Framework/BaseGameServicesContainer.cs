@@ -1,7 +1,9 @@
 using Lockstep.Game;
 
-public class BaseGameServicesContainer : ServiceContainer {
-    public BaseGameServicesContainer(){
+public class BaseGameServicesContainer : ServiceContainer
+{
+    public BaseGameServicesContainer()
+    {
         RegisterService(new RandomService());
         RegisterService(new CommonStateService());
         RegisterService(new ConstStateService());
@@ -9,7 +11,7 @@ public class BaseGameServicesContainer : ServiceContainer {
         RegisterService(new NetworkService());
         RegisterService(new IdService());
         RegisterService(new GameResourceService());
-        
+
         RegisterService(new GameStateService());
         RegisterService(new GameConfigService());
         RegisterService(new GameInputService());

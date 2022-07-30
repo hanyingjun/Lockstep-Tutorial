@@ -1,23 +1,32 @@
-using System;
 using Lockstep.Collision2D;
 using Lockstep.Math;
+using System;
 
-namespace Lockstep.Game {
+namespace Lockstep.Game
+{
     [Serializable]
-    public partial class CBrain : Component {
+    public partial class CBrain : Component
+    {
         public Entity target { get; private set; }
+        [Backup]
         public int targetId;
+        [Backup]
         public LFloat stopDistSqr = 1 * 1;
+        [Backup]
         public LFloat atkInterval = 1;
-        [Backup] private LFloat _atkTimer;
+        [Backup]
+        private LFloat _atkTimer;
 
-        public override void BindEntity(BaseEntity e){
+        public override void BindEntity(BaseEntity e)
+        {
             base.BindEntity(e);
             target = GameStateService.GetEntity(targetId) as Entity;
         }
 
-        public override void DoUpdate(LFloat deltaTime){
-            if (!entity.rigidbody.isOnFloor) {
+        public override void DoUpdate(LFloat deltaTime)
+        {
+            if (!entity.rigidbody.isOnFloor)
+            {
                 return;
             }
 
@@ -25,10 +34,12 @@ namespace Lockstep.Game {
             var allPlayer = GameStateService.GetPlayers();
             var minDist = LFloat.MaxValue;
             Entity minTarget = null;
-            foreach (var player in allPlayer) {
+            foreach (var player in allPlayer)
+            {
                 if (player.IsDead) continue;
                 var dist = (player.transform.pos - transform.pos).sqrMagnitude;
-                if (dist < minDist) {
+                if (dist < minDist)
+                {
                     minTarget = player;
                     minDist = dist;
                 }
@@ -39,7 +50,8 @@ namespace Lockstep.Game {
 
             if (minTarget == null)
                 return;
-            if (minDist > stopDistSqr) {
+            if (minDist > stopDistSqr)
+            {
                 // turn to target
                 var targetPos = minTarget.transform.pos;
                 var currentPos = transform.pos;
@@ -50,17 +62,20 @@ namespace Lockstep.Game {
                 //move to target
                 var distToTarget = (targetPos - currentPos).magnitude;
                 var movingStep = entity.moveSpd * deltaTime;
-                if (movingStep > distToTarget) {
+                if (movingStep > distToTarget)
+                {
                     movingStep = distToTarget;
                 }
 
                 var toTarget = (targetPos - currentPos).normalized;
                 transform.pos = transform.pos + toTarget * movingStep;
             }
-            else {
+            else
+            {
                 //atk target
                 _atkTimer -= deltaTime;
-                if (_atkTimer <= 0) {
+                if (_atkTimer <= 0)
+                {
                     _atkTimer = atkInterval;
                     //Atk
                     target.TakeDamage(entity, entity.damage, target.transform.Pos3);

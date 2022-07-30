@@ -8,11 +8,14 @@ namespace Lockstep.Game
     [NoBackup]
     public partial class Entity : BaseEntity
     {
+        [Backup]
         public ColliderData colliderData = new ColliderData();
+        [Backup]
         public CRigidbody rigidbody
         {
             get { return base.GetComponent<CRigidbody>(); }
         }
+        [Backup]
         public CAnimator animator
         {
             get { return base.GetComponent<CAnimator>(); }

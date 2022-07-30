@@ -11,12 +11,14 @@ namespace Lockstep.Game
     [Serializable]
     public partial class CSkillBox : Component, ISkillEventHandler
     {
+        [Backup]
         public int configId;
+        [Backup]
         public bool isFiring;
 #if UNITY_EDITOR
         [HideInInspector]
 #endif
-        [ReRefBackup]
+        [NoBackup]
         public SkillBoxConfig config;
         [Backup]
         private int _curSkillIdx = 0;
@@ -47,19 +49,25 @@ namespace Lockstep.Game
             if (config.skillInfos.Count != _skills.Count)
             {
                 _skills.Clear();
-                foreach (var info in config.skillInfos)
+                for (int i = 0; i < config.skillInfos.Count; i++)
                 {
                     var skill = new Skill();
                     _skills.Add(skill);
-                    skill.BindEntity(entity, info, this);
+                    skill.BindEntity(entity, config.skillInfos[i], this);
                     skill.DoStart();
+                }
+            }
+            else
+            {
+                for (int i = 0; i < _skills.Count; i++)
+                {
+                    _skills[i].RebindEntity(entity, config.skillInfos[i], this);
                 }
             }
         }
 
         public override void DoUpdate(LFloat deltaTime)
         {
-            if (config == null) return;
             foreach (var skill in _skills)
             {
                 skill.DoUpdate(deltaTime);
@@ -68,7 +76,6 @@ namespace Lockstep.Game
 
         public bool Fire(int idx)
         {
-            if (config == null) return false;
             if (idx < 0 || idx > _skills.Count)
             {
                 return false;
@@ -89,7 +96,6 @@ namespace Lockstep.Game
 
         public void ForceStop(int idx = -1)
         {
-            if (config == null) return;
             if (idx == -1)
             {
                 idx = _curSkillIdx;

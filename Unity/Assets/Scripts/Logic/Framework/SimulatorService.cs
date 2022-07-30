@@ -112,7 +112,9 @@ namespace Lockstep.Game
             EventHelper.Trigger(EEvent.LevelLoadProgress, 1f);
         }
 
-        public void StartSimulate()
+        // 当所有人都已经在战场中后，游戏开始
+        // todo 当loading超时的话，也要能正常游戏开始
+        private void StartSimulate()
         {
             if (IsRunning)
             {
@@ -235,7 +237,7 @@ namespace Lockstep.Game
 
             if (__debugRockbackToTick > 0)
             {
-                GetService<ICommonStateService>().IsPause = true;
+                _commonStateService.IsPause = true;
                 RollbackTo(__debugRockbackToTick, 0, false);
                 __debugRockbackToTick = -1;
             }
@@ -375,7 +377,6 @@ namespace Lockstep.Game
                     Simulate(sFrame, _world.Tick == minTickToBackup);
                 }
             }
-
 
             //Run frames
             while (_world.Tick <= TargetTick)

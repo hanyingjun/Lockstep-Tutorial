@@ -299,7 +299,11 @@ namespace Lockstep.Game{
 			writer.Write(moveSpd);
 			writer.Write(turnSpd);
 			colliderData.WriteBackup(writer);
-			skillBox.WriteBackup(writer);                                                                                     
+			animator.WriteBackup(writer);
+			brain.WriteBackup(writer);
+			rigidbody.WriteBackup(writer);
+			skillBox.WriteBackup(writer);
+			transform.WriteBackup(writer);                                                                                     
        }                                                                                            
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
@@ -313,7 +317,11 @@ namespace Lockstep.Game{
 			moveSpd = reader.ReadLFloat();
 			turnSpd = reader.ReadLFloat();
 			colliderData.ReadBackup(reader);
-			skillBox.ReadBackup(reader);                                                                                     
+			animator.ReadBackup(reader);
+			brain.ReadBackup(reader);
+			rigidbody.ReadBackup(reader);
+			skillBox.ReadBackup(reader);
+			transform.ReadBackup(reader);                                                                                     
        }                                                                                            
                                                                                                     
        public int GetHash(ref int idx){                                      
@@ -328,7 +336,11 @@ namespace Lockstep.Game{
 			hash += moveSpd.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += turnSpd.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += colliderData.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
-			hash += skillBox.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+			hash += animator.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += brain.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += rigidbody.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += skillBox.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += transform.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
            return hash;                                                                                    
        }                                                                                            
                                                                                                     
@@ -343,7 +355,11 @@ namespace Lockstep.Game{
 			sb.AppendLine(prefix + "moveSpd"+":" + moveSpd.ToString());
 			sb.AppendLine(prefix + "turnSpd"+":" + turnSpd.ToString());
 			sb.AppendLine(prefix + "colliderData" +":");  colliderData.DumpStr(sb,"\t" + prefix);
-			sb.AppendLine(prefix + "skillBox" +":");  skillBox.DumpStr(sb,"\t" + prefix);                                                                                     
+			sb.AppendLine(prefix + "animator" +":");  animator.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "brain" +":");  brain.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "rigidbody" +":");  rigidbody.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "skillBox" +":");  skillBox.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "transform" +":");  transform.DumpStr(sb,"\t" + prefix);                                                                                     
        }                                                                                            
     }                                                               
 }                                                              
@@ -352,24 +368,28 @@ namespace Lockstep.Collision2D{
     public partial class EntityTest :IBackup{                                                                  
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(EntityId);
-			writer.Write(PrefabId);                                                                                     
+			writer.Write(PrefabId);
+			transform.WriteBackup(writer);                                                                                     
        }                                                                                            
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
 			EntityId = reader.ReadInt32();
-			PrefabId = reader.ReadInt32();                                                                                     
+			PrefabId = reader.ReadInt32();
+			transform.ReadBackup(reader);                                                                                     
        }                                                                                            
                                                                                                     
        public int GetHash(ref int idx){                                      
            int hash = 1;                                                                             
 			hash += EntityId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
-			hash += PrefabId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+			hash += PrefabId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += transform.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
            return hash;                                                                                    
        }                                                                                            
                                                                                                     
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "EntityId"+":" + EntityId.ToString());
-			sb.AppendLine(prefix + "PrefabId"+":" + PrefabId.ToString());                                                                                     
+			sb.AppendLine(prefix + "PrefabId"+":" + PrefabId.ToString());
+			sb.AppendLine(prefix + "transform" +":");  transform.DumpStr(sb,"\t" + prefix);                                                                                     
        }                                                                                            
     }                                                               
 }                                                              
@@ -391,7 +411,10 @@ namespace Lockstep.Game{
 			input.WriteBackup(writer);
 			jumper.WriteBackup(writer);
 			mover.WriteBackup(writer);
-			skillBox.WriteBackup(writer);                                                                                     
+			animator.WriteBackup(writer);
+			rigidbody.WriteBackup(writer);
+			skillBox.WriteBackup(writer);
+			transform.WriteBackup(writer);                                                                                     
        }                                                                                            
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
@@ -409,7 +432,10 @@ namespace Lockstep.Game{
 			input.ReadBackup(reader);
 			jumper.ReadBackup(reader);
 			mover.ReadBackup(reader);
-			skillBox.ReadBackup(reader);                                                                                     
+			animator.ReadBackup(reader);
+			rigidbody.ReadBackup(reader);
+			skillBox.ReadBackup(reader);
+			transform.ReadBackup(reader);                                                                                     
        }                                                                                            
                                                                                                     
        public int GetHash(ref int idx){                                      
@@ -428,7 +454,10 @@ namespace Lockstep.Game{
 			hash += input.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += jumper.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += mover.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
-			hash += skillBox.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+			hash += animator.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += rigidbody.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += skillBox.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
+			hash += transform.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
            return hash;                                                                                    
        }                                                                                            
                                                                                                     
@@ -447,7 +476,10 @@ namespace Lockstep.Game{
 			sb.AppendLine(prefix + "input" +":");  input.DumpStr(sb,"\t" + prefix);
 			sb.AppendLine(prefix + "jumper" +":");  jumper.DumpStr(sb,"\t" + prefix);
 			sb.AppendLine(prefix + "mover" +":");  mover.DumpStr(sb,"\t" + prefix);
-			sb.AppendLine(prefix + "skillBox" +":");  skillBox.DumpStr(sb,"\t" + prefix);                                                                                     
+			sb.AppendLine(prefix + "animator" +":");  animator.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "rigidbody" +":");  rigidbody.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "skillBox" +":");  skillBox.DumpStr(sb,"\t" + prefix);
+			sb.AppendLine(prefix + "transform" +":");  transform.DumpStr(sb,"\t" + prefix);                                                                                     
        }                                                                                            
     }                                                               
 }                                                              
@@ -534,14 +566,14 @@ namespace Lockstep.Game{
 			writer.Write(EntityId);
 			writer.Write(PrefabId);
 			writer.Write(Timer);
-			Info.WriteBackup(writer);                                                                                     
+			transform.WriteBackup(writer);                                                                                     
        }                                                                                            
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
 			EntityId = reader.ReadInt32();
 			PrefabId = reader.ReadInt32();
 			Timer = reader.ReadLFloat();
-			Info.ReadBackup(reader);                                                                                     
+			transform.ReadBackup(reader);                                                                                     
        }                                                                                            
                                                                                                     
        public int GetHash(ref int idx){                                      
@@ -549,7 +581,7 @@ namespace Lockstep.Game{
 			hash += EntityId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += PrefabId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += Timer.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
-			hash += Info.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+			hash += transform.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
            return hash;                                                                                    
        }                                                                                            
                                                                                                     
@@ -557,7 +589,7 @@ namespace Lockstep.Game{
 			sb.AppendLine(prefix + "EntityId"+":" + EntityId.ToString());
 			sb.AppendLine(prefix + "PrefabId"+":" + PrefabId.ToString());
 			sb.AppendLine(prefix + "Timer"+":" + Timer.ToString());
-			sb.AppendLine(prefix + "Info" +":");  Info.DumpStr(sb,"\t" + prefix);                                                                                     
+			sb.AppendLine(prefix + "transform" +":");  transform.DumpStr(sb,"\t" + prefix);                                                                                     
        }                                                                                            
     }                                                               
 }                                                              
@@ -567,27 +599,27 @@ namespace Lockstep.Game{
        public void WriteBackup(Serializer writer){                                           
 			writer.Write(prefabId);
 			writer.Write(spawnPoint);
-			writer.Write(spawnTime);                                                                                     
+			writer.Write(spawnInternal);                                                                                     
        }                                                                                            
                                                                                                     
        public void ReadBackup(Deserializer reader){                                       
 			prefabId = reader.ReadInt32();
 			spawnPoint = reader.ReadLVector3();
-			spawnTime = reader.ReadLFloat();                                                                                     
+			spawnInternal = reader.ReadLFloat();                                                                                     
        }                                                                                            
                                                                                                     
        public int GetHash(ref int idx){                                      
            int hash = 1;                                                                             
 			hash += prefabId.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
 			hash += spawnPoint.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);
-			hash += spawnTime.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
+			hash += spawnInternal.GetHash(ref idx) * PrimerLUT.GetPrimer(idx++);                                                                                     
            return hash;                                                                                    
        }                                                                                            
                                                                                                     
        public void DumpStr(StringBuilder sb,string prefix){                                       
 			sb.AppendLine(prefix + "prefabId"+":" + prefabId.ToString());
 			sb.AppendLine(prefix + "spawnPoint"+":" + spawnPoint.ToString());
-			sb.AppendLine(prefix + "spawnTime"+":" + spawnTime.ToString());                                                                                     
+			sb.AppendLine(prefix + "spawnTime"+":" + spawnInternal.ToString());                                                                                     
        }                                                                                            
     }                                                               
 }                                                              

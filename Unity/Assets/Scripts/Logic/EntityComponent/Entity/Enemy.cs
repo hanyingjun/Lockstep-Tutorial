@@ -5,6 +5,7 @@ namespace Lockstep.Game
     [Serializable]
     public partial class Enemy : Entity
     {
+        [Backup]
         public CBrain brain { get { return this.GetComponent<CBrain>(); } }
 
         protected override void DoInitialize()
@@ -13,12 +14,15 @@ namespace Lockstep.Game
             AddComponent<CBrain>();
         }
 
-        //protected override void BindRef()
-        //{
-        //    base.BindRef();
-        //    RegisterComponent(brain);
-        //    moveSpd = 2;
-        //    turnSpd = 150;
-        //}
+        protected override void DoFillComponentsConfig()
+        {
+            base.DoFillComponentsConfig();
+            EnemyConfig config = ServiceContainer.GetService<IGameConfigService>().GetEntityConfig(base.PrefabId) as EnemyConfig;
+            if (config != null)
+            {
+                GetComponent<CAnimator>().configId = config.animationId;
+                GetComponent<CSkillBox>().configId = config.skillId;
+            }
+        }
     }
 }

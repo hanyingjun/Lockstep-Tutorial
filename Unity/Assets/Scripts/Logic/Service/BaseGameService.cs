@@ -11,7 +11,6 @@ namespace Lockstep.Game
 
     public abstract class BaseGameService : BaseService, IBaseGameManager
     {
-
         protected INetworkService _networkService;
         protected ISimulatorService SimulatorServiceService;
         protected IUIService _uiService;

@@ -1,32 +1,56 @@
-using System;
-using Lockstep.Game;
 using Lockstep.Math;
+using System;
 
-namespace Lockstep.Game {    
+namespace Lockstep.Game
+{
     [Serializable]
-    public partial class Spawner : BaseEntity {
+    public partial class Spawner : BaseEntity
+    {
+        [NoBackup]
         public SpawnerInfo Info = new SpawnerInfo();
+        [Backup]
+        [NonSerialized]
         public LFloat Timer;
 
-        public override void DoStart(){
-            Timer = Info.spawnTime;
+        private SpawnerInfo _info = null;
+        [NoBackup]
+        public SpawnerInfo SpInfo
+        {
+            get
+            {
+                if (_info == null)
+                {
+                    SpawnerConfig config = ServiceContainer.GetService<IGameConfigService>().GetEntityConfig(base.PrefabId) as SpawnerConfig;
+                    _info = config.entity.Info;
+                }
+                return _info;
+            }
         }
 
-        public override void DoUpdate(LFloat deltaTime){
+        public override void DoStart()
+        {
+            Timer = 0;
+        }
+
+        public override void DoUpdate(LFloat deltaTime)
+        {
             Timer += deltaTime;
-            if (Timer > Info.spawnTime) {
-                Timer = LFloat.zero;
+            if (Timer > SpInfo.spawnInternal)
+            {
+                Timer = Timer - SpInfo.spawnInternal;
                 Spawn();
             }
         }
 
-        public void Spawn(){
-            if (GameStateService.CurEnemyCount >= GameStateService.MaxEnemyCount) {
+        public void Spawn()
+        {
+            if (GameStateService.CurEnemyCount >= GameStateService.MaxEnemyCount)
+            {
                 return;
             }
 
             GameStateService.CurEnemyCount++;
-            GameStateService.CreateEntity<Enemy>(Info.prefabId, Info.spawnPoint);
+            GameStateService.CreateEntity<Enemy>(SpInfo.prefabId, SpInfo.spawnPoint);
         }
     }
 }

@@ -30,17 +30,24 @@ namespace Lockstep.Game
     public partial class Skill : INeedBackup
     {
         private static readonly HashSet<Entity> _tempEntities = new HashSet<Entity>();
+        [NoBackup]
+        public ISkillEventHandler eventHandler;
+        [NoBackup]
+        public Entity entity { get; private set; }
+        [NoBackup]
+        public SkillInfo SkillInfo { get; private set; }
 
-        [ReRefBackup] public ISkillEventHandler eventHandler;
-        [ReRefBackup] public Entity entity { get; private set; }
-        [ReRefBackup] public SkillInfo SkillInfo;
-
+        [Backup]
         public LFloat CdTimer;
+        [Backup]
         public ESkillState State;
+        [Backup]
         public LFloat skillTimer;
         public int[] partCounter = new int[0];
-        [Backup] private int _curPartIdx;
+        [Backup]
+        private int _curPartIdx;
 
+        [NoBackup]
         public SkillPart CurPart
         {
             get
@@ -53,16 +60,20 @@ namespace Lockstep.Game
 #if DEBUG_SKILL
         private float _showTimer;
 #endif
-
-        public LFloat CD { get { return SkillInfo.CD; } }
+        [NoBackup]
         public LFloat DoneDelay { get { return SkillInfo.doneDelay; } }
+        [NoBackup]
         public List<SkillPart> Parts { get { return SkillInfo.parts; } }
+        [NoBackup]
         public int TargetLayer { get { return SkillInfo.targetLayer; } }
+        [NoBackup]
         public LFloat MaxPartTime { get { return SkillInfo.maxPartTime; } }
+        [NoBackup]
         public string AnimName { get { return SkillInfo.animName; } }
 
         public void ForceStop() { }
 
+        #region 第一次绑定
         public void BindEntity(Entity entity, SkillInfo info, ISkillEventHandler eventHandler)
         {
             this.entity = entity;
@@ -77,12 +88,21 @@ namespace Lockstep.Game
             _curPartIdx = -1;
             partCounter = new int[Parts.Count];
         }
+        #endregion
+        #region Backup 绑定
+        public void RebindEntity(Entity entity, SkillInfo info, ISkillEventHandler eventHandler)
+        {
+            this.entity = entity;
+            this.SkillInfo = info;
+            this.eventHandler = eventHandler;
+        }
+        #endregion
 
         public bool Fire()
         {
             if (CdTimer <= 0 && State == ESkillState.Idle)
             {
-                CdTimer = CD;
+                CdTimer = SkillInfo.CD;
                 skillTimer = LFloat.zero;
                 for (int i = 0; i < partCounter.Length; i++)
                 {
@@ -90,7 +110,7 @@ namespace Lockstep.Game
                 }
 
                 State = ESkillState.Firing;
-                entity.animator?.Play(AnimName);
+                entity.animator.Play(AnimName);
                 ((Player)entity).mover.needMove = false;
                 OnFire();
                 return true;

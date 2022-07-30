@@ -8,6 +8,10 @@ using System.Collections.Generic;
 
 namespace Lockstep.Game
 {
+    /// <summary>
+    /// 状态服务
+    /// 1. 处理状态快照
+    /// </summary>
     public partial class GameStateService : BaseGameService, IGameStateService
     {
         private GameState _curGameState;
@@ -100,21 +104,17 @@ namespace Lockstep.Game
             EntityConfig entityConfig = _gameConfigService.GetEntityConfig(prefabId);
             if (entityConfig != null)
             {
-                PlayerConfig config = entityConfig as PlayerConfig;
-                if (config != null)
-                {
-                    baseEntity.GetComponent<CAnimator>().configId = config.animationId;
-                    baseEntity.GetComponent<CSkillBox>().configId = config.skillId;
-                }
                 entityConfig.CopyTo(baseEntity);
             }
             else
                 Debug.LogError("未找到Entity 配置：" + prefabId);
+            // 这里必须在CopyTo下面
             baseEntity.EntityId = _idService.GenId();
             baseEntity.PrefabId = prefabId;
-            baseEntity.GameStateService = _gameStateService;
+            baseEntity.GameStateService = this;
             baseEntity.ServiceContainer = _serviceContainer;
             baseEntity.DebugService = _debugService;
+            baseEntity.FillComponentsConfig();
             baseEntity.DoBindRef();
             baseEntity.transform.Pos3 = position;
             _debugService.Trace($"CreateEntity {prefabId} pos {prefabId} entityId:{baseEntity.EntityId}");

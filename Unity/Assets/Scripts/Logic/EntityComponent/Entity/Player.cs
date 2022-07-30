@@ -19,6 +19,17 @@ namespace Lockstep.Game
             AddComponent<CJumper>();
         }
 
+        protected override void DoFillComponentsConfig()
+        {
+            base.DoFillComponentsConfig();
+            PlayerConfig config = ServiceContainer.GetService<IGameConfigService>().GetEntityConfig(base.PrefabId) as PlayerConfig;
+            if (config != null)
+            {
+                GetComponent<CAnimator>().configId = config.animationId;
+                GetComponent<CSkillBox>().configId = config.skillId;
+            }
+        }
+
         public override void DoUpdate(LFloat deltaTime)
         {
             base.DoUpdate(deltaTime);

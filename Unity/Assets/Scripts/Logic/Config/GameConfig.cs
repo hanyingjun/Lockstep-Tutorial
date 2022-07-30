@@ -57,6 +57,8 @@ namespace Lockstep.Game
     {
         public override object Entity { get { return entity; } }
         public Enemy entity = new Enemy();
+        public int skillId = 0;
+        public int animationId = 0;
     }
 
     [Serializable]
@@ -124,7 +126,6 @@ namespace Lockstep.Game
 
         public int showTreeId = 0;
     }
-
 
     [CreateAssetMenu(menuName = "GameConfig")]
     public class GameConfig : ScriptableObject

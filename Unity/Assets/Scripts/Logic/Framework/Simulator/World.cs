@@ -17,7 +17,6 @@ namespace Lockstep.Game
         private List<BaseSystem> _systems = new List<BaseSystem>();
         private bool _hasStart = false;
 
-
         public void RollbackTo(int tick, int maxContinueServerTick, bool isNeedClear = true)
         {
             if (tick < 0)
@@ -32,6 +31,7 @@ namespace Lockstep.Game
             _tick = tick;
         }
 
+        // called by SimulatorService.OnGameCreate() 当所有人都准备好之后创建游戏地图
         public void StartSimulate(IServiceContainer serviceContainer, IManagerContainer mgrContainer)
         {
             Instance = this;
