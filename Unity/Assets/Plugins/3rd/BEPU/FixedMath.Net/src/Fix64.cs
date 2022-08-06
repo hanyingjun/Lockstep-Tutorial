@@ -8,6 +8,7 @@ namespace FixMath.NET
     /// <summary>
     /// Represents a Q31.32 fixed-point number.
     /// </summary>
+    [System.Serializable]
     public partial struct Fix64 : IEquatable<Fix64>, IComparable<Fix64> {
 		// Field is public and mutable to allow serialization by XNA Content Pipeline
         public long RawValue;
@@ -928,10 +929,13 @@ namespace FixMath.NET
         public static explicit operator long(Fix64 value) {
             return value.RawValue >> FRACTIONAL_PLACES;
         }
-        public static explicit operator Fix64(float value) {
+        public static implicit operator Fix64(float value) {
             return new Fix64((long)(value * ONE));
         }
-        public static explicit operator float(Fix64 value) {
+        //public static explicit operator Fix64(float value) {
+        //    return new Fix64((long)(value * ONE));
+        //}
+        public static implicit operator float(Fix64 value) {
             return (float)value.RawValue / ONE;
         }
         public static explicit operator Fix64(double value) {
@@ -1034,6 +1038,13 @@ namespace FixMath.NET
 
         public Fix64(int value) {
             RawValue = value * ONE;
+        }
+
+        public float Float { get { return (float)this; } }
+
+        public static Fix64 Get(long value)
+        {
+            return new Fix64(value);
         }
     }
 }

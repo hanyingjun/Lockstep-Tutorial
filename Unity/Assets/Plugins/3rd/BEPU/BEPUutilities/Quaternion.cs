@@ -3,11 +3,24 @@ using System;
 
 namespace BEPUutilities
 {
+    [System.Serializable]
     /// <summary>
     /// Provides XNA-like quaternion support.
     /// </summary>
     public struct Quaternion : IEquatable<Quaternion>
     {
+
+#if !STANDLAND
+        public static implicit operator Quaternion(UnityEngine.Quaternion q)
+        {
+            return new Quaternion((Fix64)q.x, (Fix64)q.y, (Fix64)q.z, (Fix64)q.w);
+        }
+
+        public static implicit operator UnityEngine.Quaternion(Quaternion q)
+        {
+            return new UnityEngine.Quaternion(q.X, q.Y, q.Z, q.W);
+        }
+#endif
         /// <summary>
         /// X component of the quaternion.
         /// </summary>
@@ -223,11 +236,16 @@ namespace BEPUutilities
         /// </summary>
         /// <param name="r">Rotation matrix used to create a new quaternion.</param>
         /// <returns>Quaternion representing the same rotation as the matrix.</returns>
-        public static Quaternion CreateFromRotationMatrix(Matrix r)
+        public static Quaternion CreateFromRotationMatrix(ref Matrix r)
         {
             Quaternion toReturn;
             CreateFromRotationMatrix(ref r, out toReturn);
             return toReturn;
+        }
+        public static Quaternion CreateLookAt(Vector3 position, Vector3 target, Vector3 upVector)
+        {
+            var fm = Matrix.CreateLookAtRH(position, target, upVector);
+            return CreateFromRotationMatrix(ref fm);
         }
 
 
@@ -687,7 +705,37 @@ namespace BEPUutilities
             q.Z = axis.Z * s;
             q.W = Fix64.Cos(halfAngle);
         }
+        public static Vector3 GetRotationFixVector3(Vector3 fromDir)
+        {
+            fromDir.Normalize();
+            Vector3 eulerAngles = new Vector3();
 
+            //AngleX = arc cos(sqrt((x^2 + z^2)/(x^2+y^2+z^2)))
+            eulerAngles.X = Fix64.Acos(Fix64.Sqrt((fromDir.X * fromDir.X + fromDir.Z * fromDir.Z) / (fromDir.X * fromDir.X + fromDir.Y * fromDir.Y + fromDir.Z * fromDir.Z))) * 360 / Fix64.PiTimes2;
+            if (fromDir.Y > 0) eulerAngles.X = 360 - eulerAngles.X;
+
+            //AngleY = arc tan(x/z)
+            eulerAngles.Y = Fix64.Atan2(fromDir.X, fromDir.Z) * 360 / Fix64.PiTimes2;
+            if (eulerAngles.Y < 0) eulerAngles.Y += 180;
+            if (fromDir.X < 0) eulerAngles.Y += 180;
+            //AngleZ = 0
+            eulerAngles.Z = 0;
+            return eulerAngles;
+        }
+        public static Quaternion LookAt(Vector3 dir)
+        {
+            return Euler(GetRotationFixVector3(dir));
+        }
+        public static Quaternion Euler(Vector3 eulerAngle)
+        {
+            eulerAngle = eulerAngle / 180 * Fix64.Pi;
+            CreateFromYawPitchRoll(
+                eulerAngle.Y,
+                eulerAngle.X,
+                eulerAngle.Z,
+                out var q);
+            return q;
+        }
         /// <summary>
         /// Constructs a quaternion from yaw, pitch, and roll.
         /// </summary>

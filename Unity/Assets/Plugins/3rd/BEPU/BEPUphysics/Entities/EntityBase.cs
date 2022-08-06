@@ -128,6 +128,11 @@ namespace BEPUphysics.Entities
             }
 
         }
+
+        public void LookAt(Vector3 target)
+        {
+            Orientation = Quaternion.LookAt(target);
+        }
         /// <summary>
         /// Gets or sets the angular velocity of the entity.
         /// </summary>

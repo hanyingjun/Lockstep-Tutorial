@@ -6,8 +6,19 @@ namespace BEPUutilities
     /// <summary>
     /// Provides XNA-like 3D vector math.
     /// </summary>
+    [Serializable]
     public struct Vector3 : IEquatable<Vector3>
     {
+#if !STANDLOND
+        public static implicit operator Vector3(UnityEngine.Vector3 v3)
+        {
+            return new Vector3((Fix64)v3.x, (Fix64)v3.y, (Fix64)v3.z);
+        }
+        public static implicit operator UnityEngine.Vector3(Vector3 v3)
+        {
+            return new UnityEngine.Vector3((float)v3.X, (float)v3.Y, (float)v3.Z);
+        }
+#endif
         /// <summary>
         /// X component of the vector.
         /// </summary>
