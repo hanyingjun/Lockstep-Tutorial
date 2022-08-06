@@ -6,7 +6,7 @@
     [CustomEditor(typeof(PhyEntitySphere))]
     public class PhyEntitySphereInspector : PhyEntityBaseInspector
     {
-        private GUIContent radiusCTT = new GUIContent("meshFitter");
+        private GUIContent radiusCTT = new GUIContent("radius");
         private SerializedProperty radiusPPY = null;
 
         protected override void OnEnable()

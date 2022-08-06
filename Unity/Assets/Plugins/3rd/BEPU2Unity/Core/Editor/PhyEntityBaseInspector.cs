@@ -12,6 +12,7 @@
         private GUIContent kineticFrictionCTT = new GUIContent("动摩擦");
         private GUIContent bouncinessCTT = new GUIContent("弹力");
         private GUIContent isTriggerCTT = new GUIContent("IsTrigger");
+        private GUIContent isBindCollisionEventCTT = new GUIContent("是否绑定碰撞事件");
 
         protected PhyEntityBase baseEntity;
 
@@ -21,6 +22,7 @@
         private SerializedProperty kineticFrictionPPY;
         private SerializedProperty bouncinessPPY;
         private SerializedProperty isTriggerPPY;
+        private SerializedProperty isBindCollisionEventPPY;
 
 
         protected virtual void OnEnable()
@@ -33,12 +35,14 @@
             kineticFrictionPPY = serializedObject.FindProperty("_kineticFriction");
             bouncinessPPY = serializedObject.FindProperty("_bounciness");
             isTriggerPPY = serializedObject.FindProperty("_isTrigger");
+            isBindCollisionEventPPY = serializedObject.FindProperty("_isBindCollisionEvent");
         }
 
         protected virtual void CustomOnInspectorGUI()
         {
             if (baseEntity == null)
                 return;
+            EditorGUILayout.PropertyField(isBindCollisionEventPPY, isBindCollisionEventCTT);
             EditorGUILayout.PropertyField(isTriggerPPY, isTriggerCTT);
 
             //EditorGUILayout.IntSlider(armorProp, 0, 100, new GUIContent("Armor"));

@@ -8,7 +8,6 @@
         [SerializeField] private float height = 1.7f;
         [SerializeField] private float radius = 0.6f;
         [SerializeField] float margin = 0.1f;
-        [SerializeField] new float mass = 10;
         [FormerlySerializedAs("行走最大坡度")] [SerializeField] float maximumTractionSlope = 0.8f;
         [FormerlySerializedAs("静止最大坡度")] [SerializeField] float maximumSupportSlope = 1.3f;
         [FormerlySerializedAs("移速")] [SerializeField] float standingSpeed = 3;
@@ -43,6 +42,7 @@
             controller = new BEPUphysics.Character.CharacterController(transform.position, height, height * 0.7f, height * 0.3f, radius,
                 margin, mass, maximumTractionSlope, maximumSupportSlope, standingSpeed, crouchingSpeed, prongSpeed, tractionForce, slidingSpeed,
                 slidingForce, airSpeed, airForce, jumpSpeed, slidingJumpSpeed, maximumGlueForce);
+            controller.Body.Id = Id;
         }
 
         protected override void DoLateUpdate()

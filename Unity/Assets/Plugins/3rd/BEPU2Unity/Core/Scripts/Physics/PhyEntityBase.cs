@@ -1,7 +1,9 @@
 ﻿namespace vwengame.bephysics
 {
-    using BEPUphysics.BroadPhaseSystems;
+    using BEPUphysics.BroadPhaseEntries;
+    using BEPUphysics.BroadPhaseEntries.MobileCollidables;
     using BEPUphysics.Entities;
+    using BEPUphysics.NarrowPhaseSystems.Pairs;
     using UnityEngine;
     using UnityEngine.Serialization;
 
@@ -24,6 +26,8 @@
         [FormerlySerializedAs("动摩擦")] [SerializeField] protected float _kineticFriction = 0.6f;
         [FormerlySerializedAs("弹力")] [SerializeField] protected float _bounciness = 0;
 
+        [SerializeField] protected bool _isBindCollisionEvent = false;
+
         private long _id;
         public long Id { get { return _id; } protected set { _id = value; } }
 
@@ -34,6 +38,10 @@
         public float staticFriction { get { return _staticFriction; } }
         public float kineticFriction { get { return _kineticFriction; } }
         public float bounciness { get { return _bounciness; } }
+        public bool IsBindCollisionEvent { get { return _isBindCollisionEvent; } }
+
+        public event System.Action<Collidable> onCollisionEnter;
+        public event System.Action<Collidable> onCollisionExit;
 
         /// <summary>
         /// 移动的话通过设定这个值完成
@@ -63,7 +71,7 @@
             DoAwake();
             if (entity != null)
             {
-                entity.Tag = this;
+                entity.Id = Id;
                 if (IsRigibody)
                 {
                     entity.CollisionInformation.CollisionRules.Personal = BEPUphysics.CollisionRuleManagement.CollisionRule.Defer;
@@ -74,6 +82,12 @@
                 else
                 {
                     entity.CollisionInformation.CollisionRules.Personal = isTrigger ? BEPUphysics.CollisionRuleManagement.CollisionRule.NoSolver : BEPUphysics.CollisionRuleManagement.CollisionRule.Normal;
+                }
+
+                if (IsBindCollisionEvent)
+                {
+                    entity.CollisionInformation.Events.DetectingInitialCollision += CollisionEnter;
+                    entity.CollisionInformation.Events.CollisionEnded += CollisionExit;
                 }
             }
         }
@@ -109,8 +123,35 @@
             transform.rotation = entity.Orientation;
         }
 
-        protected virtual void OnDrawGizmos()
+        protected virtual void BEPUCollisionEnter(Collidable other)
         {
+            if (onCollisionEnter != null)
+                onCollisionEnter(other);
+        }
+
+        protected virtual void BEPUCollisionExit(Collidable other)
+        {
+            if (onCollisionExit != null)
+                onCollisionExit(other);
+        }
+
+        private void CollisionEnter(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
+        {
+            //Debug.LogError(BEPUPhysicsMgr.GetEntity(pair.EntityA.Id));
+            BEPUCollisionEnter(pair.CollidableA);
+        }
+
+        private void CollisionExit(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
+        {
+            BEPUCollisionExit(pair.CollidableA);
+        }
+
+        protected virtual void OnDrawGizmosSelected()
+        {
+            //}
+
+            //protected virtual void OnDrawGizmos()
+            //{
             if (!this.enabled)
                 return;
 

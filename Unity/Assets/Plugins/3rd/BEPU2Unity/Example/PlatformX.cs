@@ -13,6 +13,7 @@
         void Start()
         {
             boxEntity = this.GetComponent<PhyEntityBox>();
+            boxEntity.Velocity = new BEPUutilities.Vector3(m_dir * speed, boxEntity.Velocity.Y, boxEntity.Velocity.Z);
         }
 
         void Update()
@@ -22,8 +23,8 @@
             {
                 timer = timer - 2;
                 m_dir = m_dir * (-1);
+                boxEntity.Velocity = new BEPUutilities.Vector3(m_dir * speed, boxEntity.Velocity.Y, boxEntity.Velocity.Z);
             }
-            boxEntity.Velocity = new BEPUutilities.Vector3(m_dir * speed, boxEntity.Velocity.Y, boxEntity.Velocity.Z);
         }
     }
 }

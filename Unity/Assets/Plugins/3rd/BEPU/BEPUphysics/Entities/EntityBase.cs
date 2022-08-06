@@ -43,7 +43,10 @@ namespace BEPUphysics.Entities
 #endif
         internal bool isDynamic;
 
-
+        /// <summary>
+        /// id
+        /// </summary>
+        public long Id { get; set; }
 
         ///<summary>
         /// Gets or sets the position of the Entity.  This Position acts

@@ -32,7 +32,6 @@
             Physics.autoSimulation = false; // 关闭原来物理引擎迭代;
             Physics.autoSyncTransforms = false; // 关闭射线检测功能
             BEPUPhysicsMgr.Instance = this; // 初始化单例
-            Debug.LogError("222");
             this.space = new BEPUphysics.Space(); // 创建物理世界
             this.space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81m, 0); // 配置重力
             this.space.TimeStepSettings.TimeStepDuration = 1 / 60m; // 设置迭代时间间隔
@@ -111,6 +110,13 @@
             {
                 Instance.space.Remove(spaceObject);
             }
+        }
+
+        public static PhyEntityBase GetEntity(long id)
+        {
+            if (entitys.ContainsKey(id))
+                return entitys[id];
+            return null;
         }
 
         public void UpdateSpace()
